@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY ||"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"});
 
-Text.post('/generate',verify, async (req, res) => {
+Text.post('/generate', async (req, res) => {
     try { 
         const { topic, language, blockedWord } = req.body;
         // console.log(topic, language,blockedWord );

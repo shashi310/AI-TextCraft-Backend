@@ -59,7 +59,7 @@ async function main(topic, language, blockedWord) {
 }
 
 
-Text.post('/consize',verify, async (req, res) => {
+Text.post('/consize', async (req, res) => {
   try { 
       const { info,length, blockedWord } = req.body;
       // console.log(info, length,blockedWord );

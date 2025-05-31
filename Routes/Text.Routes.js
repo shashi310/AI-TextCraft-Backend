@@ -152,6 +152,48 @@ async function main3(info, language) {
   return(chatCompletion.choices);
 }
 
+Text.post('/tags', async (req, res) => {
+  try {
+    const { info, length } = req.body;
+
+    const tags = await generateTags(info, length);
+
+    const history = new HistoryModel({
+      body: tags.join(', '),
+      userID: req.body.userId,
+      type: "Tags Generated",
+      date: new Date(),
+    });
+    await history.save();
+
+    res.status(200).json({ tags });
+  } catch (error) {
+    console.error('Error in /tags:', error);
+    res.status(500).json({ error: 'An error occurred while generating tags.' });
+  }
+});
+
+async function generateTags(info, length) {
+  const chatCompletion = await openai.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content: "You extract general-purpose keywords from user text.",
+      },
+      {
+        role: "user",
+        content: `Extract exactly ${length} relevant tags from the following sentence. Return a comma-separated list with no extra text:\n\n"${info}"`
+      }
+    ],
+    model: 'gpt-3.5-turbo',
+    temperature: 0.5,
+    max_tokens: 100
+  });
+
+  const response = chatCompletion.choices[0].message.content.trim();
+  return response.split(',').map(tag => tag.trim());
+}
+
 
 
 
